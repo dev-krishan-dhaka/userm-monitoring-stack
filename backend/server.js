@@ -1,10 +1,12 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { connectDB } = require('./config/database');
+const sequelize = require('./config/database');
 const userRoutes = require('./routes/userRoutes');
 const client = require('prom-client');
 const responseTime = require('response-time');
+
+const PORT = process.env.PORT || 5000;
 
 const app = express();
 
@@ -77,14 +79,16 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-connectDB().then(() => {
-  app.listen(process.env.PORT || 5000, () => {
-    console.log(`Server running on port ${process.env.PORT || 5000}`);
-    console.log(`Metrics available at http://localhost:${process.env.PORT || 5000}/metrics`);
+sequelize.authenticate()
+  .then(() => {
+    console.log("Database connected");
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Database connection failed:", err);
   });
-}).catch(err => {
-  console.error('Database connection error:', err);
-  process.exit(1);
-});
 
 module.exports = { userRegistrations, userLogins, httpRequestDuration };
