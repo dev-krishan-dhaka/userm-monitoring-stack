@@ -5,10 +5,14 @@ const sequelize = require('./config/database');
 const userRoutes = require('./routes/userRoutes');
 const client = require('prom-client');
 const responseTime = require('response-time');
+const cors = require("cors");
+
+app.use(cors());
 
 const PORT = process.env.PORT || 5000;
 
 const app = express();
+app.use(cors());
 
 // Clear and setup metrics
 client.register.clear();
